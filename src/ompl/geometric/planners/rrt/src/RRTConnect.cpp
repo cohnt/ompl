@@ -243,10 +243,24 @@ ompl::base::PlannerStatus ompl::geometric::RRTConnect::solve(const base::Planner
 
     while (!ptc)
     {
+        /*
         TreeData &tree = startTree_ ? tStart_ : tGoal_;
         tgi.start = startTree_;
         startTree_ = !startTree_;
         TreeData &otherTree = startTree_ ? tStart_ : tGoal_;
+        */
+        double asize = (startTree_ ? tStart_ : tGoal_)->size();
+        double bsize = (startTree_ ? tGoal_ : tStart_)->size();
+        double ratio = std::abs(asize - bsize) / asize;
+
+        if (ratio < 1)
+        {
+            startTree_ = !startTree_;
+        };
+
+        TreeData &tree = startTree_ ? tStart_ : tGoal_;
+        tgi.start = startTree_;
+        TreeData &otherTree = startTree_ ? tGoal_ : tStart_;
 
         if (tGoal_->size() == 0 || pis_.getSampledGoalsCount() < tGoal_->size() / 2)
         {
